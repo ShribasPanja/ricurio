@@ -200,7 +200,7 @@ export default function SubscriptionModal({
                       <span className="font-semibold text-gray-900">
                         {new Date(
                           userInfo.subscriptionExpiry
-                        ).toLocaleDateString('en-GB')}
+                        ).toLocaleDateString("en-GB")}
                       </span>
                     </div>
                   )}
@@ -212,12 +212,11 @@ export default function SubscriptionModal({
                 <button
                   onClick={async () => {
                     // Redirect to Dodo Payments checkout
+                    // Use the product IDs directly from .env.local
                     const productId =
                       planType === "monthly"
-                        ? process.env.MONTHLY_PRODUCT_ID ||
-                          "pdt_nqW9t1yY3VtRcOBXgQ8dZ"
-                        : process.env.ANNUAL_PRODUCT_ID ||
-                          "pdt_NbGeZRqoNYQZx0m81T6nd";
+                        ? "pdt_nqW9t1yY3VtRcOBXgQ8dZ"
+                        : "pdt_NbGeZRqoNYQZx0m81T6nd";
                     const response = await fetch(
                       `/api/checkout?productId=${productId}`
                     );
