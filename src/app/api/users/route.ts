@@ -69,6 +69,12 @@ import { prisma } from "@/lib/prisma";
 // }
 
 export async function GET(request: NextRequest) {
+    const headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    };
+
     try {
         const { searchParams } = new URL(request.url);
         const email = searchParams.get("email");
@@ -91,18 +97,38 @@ export async function GET(request: NextRequest) {
             if (!user) {
                 return NextResponse.json(
                     { error: "User not found" },
-                    { status: 404 }
+                    { status: 404, headers }
                 );
             }
 
-            return NextResponse.json({ user });
+            return NextResponse.json(
+                { user },
+                { headers }
+            );
         }
 
+        return NextResponse.json(
+            { error: "Email parameter is required" },
+            { status: 400, headers }
+        );
     } catch (error) {
         console.error("Error fetching users:", error);
         return NextResponse.json(
             { error: "Internal server error" },
-            { status: 500 }
+            { status: 500, headers }
         );
     }
+}
+
+export async function OPTIONS() {
+    return NextResponse.json(
+        {},
+        {
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization",
+            },
+        }
+    );
 }

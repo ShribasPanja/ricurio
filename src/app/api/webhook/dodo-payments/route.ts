@@ -14,24 +14,26 @@ export const POST = Webhooks({
     console.log("Payment succeeded:", payload.data);
 
     try {
-      const { customer } = payload.data;
+      const { customer, payment_id } = payload.data;
 
       if (!customer?.email) {
         console.error("No customer email in payment payload");
         return;
       }
 
-      // Find or create user
+      // Find or create user and store payment_id
       const user = await prisma.user.upsert({
         where: { email: customer.email },
         update: {
           name: customer.name || undefined,
           dodoCustomerId: customer.customer_id || undefined,
+          lastPaymentId: payment_id || undefined,
         },
         create: {
           email: customer.email,
           name: customer.name || null,
           dodoCustomerId: customer.customer_id || null,
+          lastPaymentId: payment_id || null,
         },
       });
 
@@ -46,7 +48,7 @@ export const POST = Webhooks({
     console.log("Subscription activated:", payload.data);
 
     try {
-      const { customer, product_id, subscription_id } = payload.data;
+      const { customer, subscription_id } = payload.data;
 
       if (!customer?.email) {
         console.error("No customer email in subscription payload");
@@ -158,6 +160,43 @@ export const POST = Webhooks({
       console.log("Subscription expired for user:", customer.email);
     } catch (error) {
       console.error("Error handling subscription expiration:", error);
+    }
+  },
+
+  onRefundSucceeded: async (payload) => {
+    console.log("Refund succeeded:", payload.data);
+
+    try {
+      const { payment_id } = payload.data;
+
+      if (!payment_id) {
+        console.error("No payment_id in refund payload");
+        return;
+      }
+
+      // Find user by payment_id
+      const user = await prisma.user.findFirst({
+        where: { lastPaymentId: payment_id },
+      });
+
+      if (!user) {
+        console.error("User not found for payment_id:", payment_id);
+        return;
+      }
+
+      // Cancel subscription and revert to free plan
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          subscriptionStatus: "CANCELLED",
+          planType: "FREE",
+          subscriptionExpiry: null,
+        },
+      });
+
+      console.log("Refund processed for user:", user.email);
+    } catch (error) {
+      console.error("Error handling refund:", error);
     }
   },
 });

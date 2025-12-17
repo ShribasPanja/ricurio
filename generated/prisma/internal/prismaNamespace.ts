@@ -522,6 +522,7 @@ export const UserScalarFieldEnum = {
   email: 'email',
   name: 'name',
   dodoCustomerId: 'dodoCustomerId',
+  lastPaymentId: 'lastPaymentId',
   subscriptionStatus: 'subscriptionStatus',
   planType: 'planType',
   subscriptionExpiry: 'subscriptionExpiry',

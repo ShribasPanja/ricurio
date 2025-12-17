@@ -1,6 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+// CORS headers for Chrome extension
+const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+// Handle preflight OPTIONS request
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders });
+}
+
 export async function POST(request: NextRequest) {
     try {
         // Get the auth token from the Authorization header
@@ -9,7 +21,7 @@ export async function POST(request: NextRequest) {
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
             return NextResponse.json(
                 { error: "Missing or invalid Authorization header" },
-                { status: 401 }
+                { status: 401, headers: corsHeaders }
             );
         }
 
@@ -28,7 +40,7 @@ export async function POST(request: NextRequest) {
         if (!response.ok) {
             return NextResponse.json(
                 { error: "Failed to fetch user info from Google" },
-                { status: 401 }
+                { status: 401, headers: corsHeaders }
             );
         }
 
@@ -38,7 +50,7 @@ export async function POST(request: NextRequest) {
         if (!email) {
             return NextResponse.json(
                 { error: "Email not found in Google user info" },
-                { status: 400 }
+                { status: 400, headers: corsHeaders }
             );
         }
 
@@ -55,21 +67,24 @@ export async function POST(request: NextRequest) {
             },
         });
 
-        return NextResponse.json({
-            success: true,
-            user: {
-                id: user.id,
-                email: user.email,
-                name: user.name,
-                subscriptionStatus: user.subscriptionStatus,
-                planType: user.planType,
+        return NextResponse.json(
+            {
+                success: true,
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    name: user.name,
+                    subscriptionStatus: user.subscriptionStatus,
+                    planType: user.planType,
+                },
             },
-        });
+            { headers: corsHeaders }
+        );
     } catch (error) {
         console.error("Error in Google auth endpoint:", error);
         return NextResponse.json(
             { error: "Internal server error" },
-            { status: 500 }
+            { status: 500, headers: corsHeaders }
         );
     }
 }

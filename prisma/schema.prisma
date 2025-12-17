@@ -18,6 +18,7 @@ model User {
   email          String  @unique
   name           String?
   dodoCustomerId String? @unique
+  lastPaymentId  String?
 
   subscriptionStatus SubscriptionStatus @default(FREE)
   planType           PlanType           @default(FREE)

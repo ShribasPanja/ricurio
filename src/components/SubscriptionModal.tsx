@@ -200,7 +200,7 @@ export default function SubscriptionModal({
                       <span className="font-semibold text-gray-900">
                         {new Date(
                           userInfo.subscriptionExpiry
-                        ).toLocaleDateString()}
+                        ).toLocaleDateString('en-GB')}
                       </span>
                     </div>
                   )}
