@@ -5,8 +5,54 @@ export const POST = Webhooks({
   webhookKey: process.env.DODO_PAYMENTS_WEBHOOK_KEY!,
 
   // Handle all webhook events
-  onPayload: async (payload) => {
+  onPayload: async (payload: any) => {
     console.log("Webhook received:", payload.type);
+    if (payload.type === "subscription.updated") {
+      try {
+        const { customer, subscription_id, status, next_billing_date, product_id } = payload.data;
+
+        if (!customer?.email) {
+          console.error("No customer email in subscription payload");
+          return;
+        }
+
+        // Only process if status is active
+        if (status !== "active") {
+          console.log("Subscription not active, skipping update");
+          return;
+        }
+
+        // Calculate expiry date from next_billing_date
+        const expiryDate = next_billing_date ? new Date(next_billing_date) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+        // Determine plan type based on product_id
+        const planType = product_id === "pdt_nqW9t1yY3VtRcOBXgQ8dZ" ? "PRO_MONTHLY" : "PRO_ANNUAL";
+
+        // Update user subscription
+        const user = await prisma.user.upsert({
+          where: { email: customer.email },
+          update: {
+            name: customer.name || undefined,
+            dodoCustomerId: customer.customer_id || subscription_id || undefined,
+            subscriptionStatus: "ACTIVE",
+            planType: planType,
+            subscriptionExpiry: expiryDate,
+          },
+          create: {
+            email: customer.email,
+            name: customer.name || null,
+            dodoCustomerId: customer.customer_id || subscription_id || null,
+            subscriptionStatus: "ACTIVE",
+            planType: planType,
+            subscriptionExpiry: expiryDate,
+          },
+        });
+
+        console.log("Subscription updated for user:", user.email);
+      } catch (error) {
+        console.error("Error handling subscription update:", error);
+      }
+    }
   },
 
   // Handle successful payments
