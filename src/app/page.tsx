@@ -134,33 +134,26 @@ export default function Home() {
               </button> */}
             </div>
             <p className="text-sm text-gray-500 mt-6">
-              ✨ 100 free imports per day • No credit card required
+              ✨ 10 free imports per day • No credit card required
             </p>
           </div>
 
           {/* Hero Image/Demo */}
           <div className="mt-16 relative animate-fade-in-up animation-delay-600">
             <div className="absolute inset-0 bg-gradient-to-t from-blue-600/20 to-transparent rounded-3xl blur-3xl animate-pulse-slow"></div>
-            <div className="relative bg-white rounded-2xl shadow-2xl p-8 border border-gray-200 hover:shadow-3xl hover:scale-105 transition-all duration-500 animate-float">
-              <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 hover:rotate-12 transition-transform duration-300 cursor-pointer">
-                    <svg
-                      className="w-10 h-10 text-white animate-pulse"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
-                  <p className="text-gray-600 text-lg">Product Demo Video</p>
-                </div>
+            <div className="relative bg-white rounded-2xl shadow-2xl p-6 md:p-8 border border-gray-200 hover:shadow-3xl hover:scale-105 transition-all duration-500 ">
+              <div className="aspect-video rounded-xl overflow-hidden bg-black">
+                <video
+                  controls
+                  playsInline
+                  className="w-full h-full object-cover bg-black"
+                >
+                  <source src="/demo.mp4" type="video/mp4" />
+                  Your browser does not support the video tag.{" "}
+                  <a href="/demo.mp4" className="text-blue-600 underline">
+                    Download demo
+                  </a>
+                </video>
               </div>
             </div>
           </div>
@@ -908,7 +901,7 @@ export default function Home() {
             <p className="text-sm text-gray-500">
               Need something custom?{" "}
               <a
-                href="#"
+                href="mailto:shribaspanja@gmail.com"
                 className="text-blue-600 hover:text-blue-700 font-semibold"
               >
                 Contact sales
